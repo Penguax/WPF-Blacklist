@@ -1,0 +1,9 @@
+{
+  "blacklist": [
+    "flowsheet",
+    "Exchange rate",
+    "Table of Contents",
+    "Index",
+    "References"
+  ]
+}
