@@ -5,8 +5,438 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>PDF Bookmark Extractor with Blacklist</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
-    <style>*{margin:0;padding:0;box-sizing:border-box}body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Oxygen,Ubuntu,Cantarell,sans-serif;background:linear-gradient(135deg,#667eea 0,#764ba2 100%);min-height:100vh;padding:20px;display:flex;justify-content:center;align-items:center}.container{background:#fff;border-radius:20px;box-shadow:0 20px 60px rgba(0,0,0,.3);max-width:800px;width:100%;padding:40px}h1{color:#333;text-align:center;margin-bottom:30px;font-size:28px}.drop-zone{border:3px dashed #667eea;border-radius:15px;padding:60px 20px;text-align:center;cursor:pointer;transition:all .3s ease;background:#f8f9ff;margin-bottom:20px}.drop-zone.drag-over,.drop-zone:hover{border-color:#764ba2;background:#f0f1ff;transform:scale(1.02)}.drop-zone-icon{font-size:48px;margin-bottom:15px}.drop-zone-text{color:#666;font-size:18px;margin-bottom:10px}.drop-zone-subtext{color:#999;font-size:14px}.file-input{display:none}.controls{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:15px;margin-bottom:20px}.control-group{display:flex;flex-direction:column}.control-group label{color:#555;font-size:14px;font-weight:600;margin-bottom:8px}.control-group input,.control-group select{padding:10px;border:2px solid #e0e0e0;border-radius:8px;font-size:14px;transition:border-color .3s ease}.control-group input:focus,.control-group select:focus{outline:0;border-color:#667eea}.file-info{background:#f0f1ff;border-left:4px solid #667eea;padding:15px;border-radius:8px;margin-bottom:20px;display:none}.file-info.show{display:block}.file-info-title{font-weight:600;color:#333;margin-bottom:5px}.file-info-details{color:#666;font-size:14px}.blacklist-status{background:#fff3cd;border-left:4px solid #ffc107;padding:10px;border-radius:8px;margin-bottom:15px;font-size:13px;color:#856404;display:none}.blacklist-status.loaded{background:#d4edda;border-left-color:#28a745;color:#155724}.blacklist-status.show{display:block}.output-container{background:#f8f9fa;border:2px solid #e0e0e0;border-radius:10px;padding:20px;margin-bottom:20px;display:none}.output-container.show{display:block}.output{background:#fff;border:1px solid #ddd;border-radius:8px;padding:15px;min-height:200px;max-height:400px;overflow-y:auto;font-family:Monaco,'Courier New',monospace;font-size:13px;white-space:pre-wrap;word-wrap:break-word}.button-group{display:flex;gap:10px;margin-bottom:20px}.btn{flex:1;padding:12px 24px;border:none;border-radius:8px;font-size:16px;font-weight:600;cursor:pointer;transition:all .3s ease;display:flex;align-items:center;justify-content:center;gap:8px}.btn-primary{background:linear-gradient(135deg,#667eea 0,#764ba2 100%);color:#fff}.btn-primary:hover{transform:translateY(-2px);box-shadow:0 5px 15px rgba(102,126,234,.4)}.btn-secondary{background:#6c757d;color:#fff}.btn-secondary:hover{background:#5a6268;transform:translateY(-2px)}.btn:disabled{opacity:.5;cursor:not-allowed;transform:none!important}.status-message{padding:12px;border-radius:8px;margin-bottom:20px;font-size:14px;display:none;animation:slideIn .3s ease}.status-message.show{display:block}.status-message.success{background:#d4edda;color:#155724;border-left:4px solid #28a745}.status-message.error{background:#f8d7da;color:#721c24;border-left:4px solid #dc3545}@keyframes slideIn{from{opacity:0;transform:translateY(-10px)}to{opacity:1;transform:translateY(0)}}.footer{text-align:center;color:#666;font-size:12px;margin-top:20px}.email-form{margin-top:20px}.form-group{margin-bottom:20px}.form-group label{display:block;color:#333;font-size:14px;font-weight:600;margin-bottom:8px}.form-group input[type=text]{width:100%;padding:12px;border:2px solid #e0e0e0;border-radius:8px;font-size:14px;transition:border-color .3s ease}.form-group input[type=text]:focus{outline:0;border-color:#667eea}.form-group textarea{width:100%;padding:12px;border:2px solid #e0e0e0;border-radius:8px;font-size:14px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Oxygen,Ubuntu,Cantarell,sans-serif;resize:vertical;transition:border-color .3s ease}.form-group textarea:focus{outline:0;border-color:#667eea}.auto-populated-box{background:#f8f9fa;border:2px dashed #667eea;border-radius:8px;padding:15px;min-height:100px;max-height:300px;overflow-y:auto;font-family:Monaco,'Courier New',monospace;font-size:13px;white-space:pre-wrap;word-wrap:break-word}.auto-populated-box.populated{background:#e8f5e9;border-color:#28a745}.email-preview{background:#f8f9fa;border:2px solid #667eea;border-radius:10px;padding:20px;margin-top:30px}.email-preview h3{color:#333;margin-bottom:15px;font-size:20px}.preview-header{background:#fff;border:1px solid #e0e0e0;border-radius:8px;padding:15px;margin-bottom:15px}.preview-header div{margin-bottom:8px;font-size:14px}.preview-header div:last-child{margin-bottom:0}.preview-body{background:#fff;border:1px solid #e0e0e0;border-radius:8px;padding:20px;min-height:200px;white-space:pre-wrap;word-wrap:break-word;line-height:1.6}.section-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:15px;padding-bottom:10px;border-bottom:2px solid #e0e0e0}.section-title{color:#333;font-size:18px;font-weight:600;margin:0}.collapse-btn{background:linear-gradient(135deg,#667eea 0,#764ba2 100%);color:#fff;border:none;border-radius:6px;padding:6px 12px;font-size:12px;font-weight:600;cursor:pointer;transition:all .3s ease;display:flex;align-items:center;gap:5px}.collapse-btn:hover{transform:translateY(-1px);box-shadow:0 3px 10px rgba(102,126,234,.3)}.collapse-btn .icon{font-size:14px;transition:transform .3s ease}.collapse-btn.collapsed .icon{transform:rotate(180deg)}.collapsible-content{max-height:2000px;overflow:hidden;transition:max-height .4s ease,opacity .3s ease,margin .3s ease;opacity:1}.collapsible-content.collapsed{max-height:0;opacity:0;margin:0}.section-wrapper{margin-bottom:25px}</style>
-</head>
+<style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            max-width: 800px;
+            width: 100%;
+            padding: 40px;
+        }
+
+        h1 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 28px;
+        }
+
+        .drop-zone {
+            border: 3px dashed #667eea;
+            border-radius: 15px;
+            padding: 60px 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: #f8f9ff;
+            margin-bottom: 20px;
+        }
+
+        .drop-zone:hover, .drop-zone.drag-over {
+            border-color: #764ba2;
+            background: #f0f1ff;
+            transform: scale(1.02);
+        }
+
+        .drop-zone-icon {
+            font-size: 48px;
+            margin-bottom: 15px;
+        }
+
+        .drop-zone-text {
+            color: #666;
+            font-size: 18px;
+            margin-bottom: 10px;
+        }
+
+        .drop-zone-subtext {
+            color: #999;
+            font-size: 14px;
+        }
+
+        .file-input {
+            display: none;
+        }
+
+        .controls {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .control-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .control-group label {
+            color: #555;
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .control-group select, .control-group input {
+            padding: 10px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: border-color 0.3s ease;
+        }
+
+        .control-group select:focus, .control-group input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .file-info {
+            background: #f0f1ff;
+            border-left: 4px solid #667eea;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: none;
+        }
+
+        .file-info.show {
+            display: block;
+        }
+
+        .file-info-title {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 5px;
+        }
+
+        .file-info-details {
+            color: #666;
+            font-size: 14px;
+        }
+
+        .blacklist-status {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 10px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            font-size: 13px;
+            color: #856404;
+            display: none;
+        }
+
+        .blacklist-status.loaded {
+            background: #d4edda;
+            border-left-color: #28a745;
+            color: #155724;
+        }
+
+        .blacklist-status.show {
+            display: block;
+        }
+
+        .output-container {
+            background: #f8f9fa;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            display: none;
+        }
+
+        .output-container.show {
+            display: block;
+        }
+
+        .output {
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 15px;
+            min-height: 200px;
+            max-height: 400px;
+            overflow-y: auto;
+            font-family: 'Monaco', 'Courier New', monospace;
+            font-size: 13px;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .btn {
+            flex: 1;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #5a6268;
+            transform: translateY(-2px);
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none !important;
+        }
+
+        .status-message {
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-size: 14px;
+            display: none;
+            animation: slideIn 0.3s ease;
+        }
+
+        .status-message.show {
+            display: block;
+        }
+
+        .status-message.success {
+            background: #d4edda;
+            color: #155724;
+            border-left: 4px solid #28a745;
+        }
+
+        .status-message.error {
+            background: #f8d7da;
+            color: #721c24;
+            border-left: 4px solid #dc3545;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .footer {
+            text-align: center;
+            color: #666;
+            font-size: 12px;
+            margin-top: 20px;
+        }
+         /* Email Form Styles */
+        .email-form {
+            margin-top: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            color: #333;
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .form-group input[type="text"] {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-group input[type="text"]:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .form-group textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 14px;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            resize: vertical;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .auto-populated-box {
+            background: #f8f9fa;
+            border: 2px dashed #667eea;
+            border-radius: 8px;
+            padding: 15px;
+            min-height: 100px;
+            max-height: 300px;
+            overflow-y: auto;
+            font-family: 'Monaco', 'Courier New', monospace;
+            font-size: 13px;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+
+        .auto-populated-box.populated {
+            background: #e8f5e9;
+            border-color: #28a745;
+        }
+
+        .email-preview {
+            background: #f8f9fa;
+            border: 2px solid #667eea;
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 30px;
+        }
+
+        .email-preview h3 {
+            color: #333;
+            margin-bottom: 15px;
+            font-size: 20px;
+        }
+
+        .preview-header {
+            background: white;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 15px;
+        }
+
+        .preview-header div {
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+
+        .preview-header div:last-child {
+            margin-bottom: 0;
+        }
+
+        .preview-body {
+            background: white;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 20px;
+            min-height: 200px;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            line-height: 1.6;
+        }
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #e0e0e0;
+        }
+
+        .section-title {
+            color: #333;
+            font-size: 18px;
+            font-weight: 600;
+            margin: 0;
+        }
+
+        .collapse-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            padding: 6px 12px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .collapse-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 3px 10px rgba(102, 126, 234, 0.3);
+        }
+
+        .collapse-btn .icon {
+            font-size: 14px;
+            transition: transform 0.3s ease;
+        }
+
+        .collapse-btn.collapsed .icon {
+            transform: rotate(180deg);
+        }
+
+        .collapsible-content {
+            max-height: 2000px;
+            overflow: hidden;
+            transition: max-height 0.4s ease, opacity 0.3s ease, margin 0.3s ease;
+            opacity: 1;
+        }
+
+        .collapsible-content.collapsed {
+            max-height: 0;
+            opacity: 0;
+            margin: 0;
+        }
+
+        .section-wrapper {
+            margin-bottom: 25px;
+        }
+    </style></head>
 <body>
     <div class="container">
         <h1>📚 PDF Bookmark Extractor</h1>
