@@ -1,0 +1,555 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PDF Bookmark Extractor with Blacklist</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+    <style>*{margin:0;padding:0;box-sizing:border-box}body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Oxygen,Ubuntu,Cantarell,sans-serif;background:linear-gradient(135deg,#667eea 0,#764ba2 100%);min-height:100vh;padding:20px;display:flex;justify-content:center;align-items:center}.container{background:#fff;border-radius:20px;box-shadow:0 20px 60px rgba(0,0,0,.3);max-width:800px;width:100%;padding:40px}h1{color:#333;text-align:center;margin-bottom:30px;font-size:28px}.drop-zone{border:3px dashed #667eea;border-radius:15px;padding:60px 20px;text-align:center;cursor:pointer;transition:all .3s ease;background:#f8f9ff;margin-bottom:20px}.drop-zone.drag-over,.drop-zone:hover{border-color:#764ba2;background:#f0f1ff;transform:scale(1.02)}.drop-zone-icon{font-size:48px;margin-bottom:15px}.drop-zone-text{color:#666;font-size:18px;margin-bottom:10px}.drop-zone-subtext{color:#999;font-size:14px}.file-input{display:none}.controls{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:15px;margin-bottom:20px}.control-group{display:flex;flex-direction:column}.control-group label{color:#555;font-size:14px;font-weight:600;margin-bottom:8px}.control-group input,.control-group select{padding:10px;border:2px solid #e0e0e0;border-radius:8px;font-size:14px;transition:border-color .3s ease}.control-group input:focus,.control-group select:focus{outline:0;border-color:#667eea}.file-info{background:#f0f1ff;border-left:4px solid #667eea;padding:15px;border-radius:8px;margin-bottom:20px;display:none}.file-info.show{display:block}.file-info-title{font-weight:600;color:#333;margin-bottom:5px}.file-info-details{color:#666;font-size:14px}.blacklist-status{background:#fff3cd;border-left:4px solid #ffc107;padding:10px;border-radius:8px;margin-bottom:15px;font-size:13px;color:#856404;display:none}.blacklist-status.loaded{background:#d4edda;border-left-color:#28a745;color:#155724}.blacklist-status.show{display:block}.output-container{background:#f8f9fa;border:2px solid #e0e0e0;border-radius:10px;padding:20px;margin-bottom:20px;display:none}.output-container.show{display:block}.output{background:#fff;border:1px solid #ddd;border-radius:8px;padding:15px;min-height:200px;max-height:400px;overflow-y:auto;font-family:Monaco,'Courier New',monospace;font-size:13px;white-space:pre-wrap;word-wrap:break-word}.button-group{display:flex;gap:10px;margin-bottom:20px}.btn{flex:1;padding:12px 24px;border:none;border-radius:8px;font-size:16px;font-weight:600;cursor:pointer;transition:all .3s ease;display:flex;align-items:center;justify-content:center;gap:8px}.btn-primary{background:linear-gradient(135deg,#667eea 0,#764ba2 100%);color:#fff}.btn-primary:hover{transform:translateY(-2px);box-shadow:0 5px 15px rgba(102,126,234,.4)}.btn-secondary{background:#6c757d;color:#fff}.btn-secondary:hover{background:#5a6268;transform:translateY(-2px)}.btn:disabled{opacity:.5;cursor:not-allowed;transform:none!important}.status-message{padding:12px;border-radius:8px;margin-bottom:20px;font-size:14px;display:none;animation:slideIn .3s ease}.status-message.show{display:block}.status-message.success{background:#d4edda;color:#155724;border-left:4px solid #28a745}.status-message.error{background:#f8d7da;color:#721c24;border-left:4px solid #dc3545}@keyframes slideIn{from{opacity:0;transform:translateY(-10px)}to{opacity:1;transform:translateY(0)}}.footer{text-align:center;color:#666;font-size:12px;margin-top:20px}.email-form{margin-top:20px}.form-group{margin-bottom:20px}.form-group label{display:block;color:#333;font-size:14px;font-weight:600;margin-bottom:8px}.form-group input[type=text]{width:100%;padding:12px;border:2px solid #e0e0e0;border-radius:8px;font-size:14px;transition:border-color .3s ease}.form-group input[type=text]:focus{outline:0;border-color:#667eea}.form-group textarea{width:100%;padding:12px;border:2px solid #e0e0e0;border-radius:8px;font-size:14px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Oxygen,Ubuntu,Cantarell,sans-serif;resize:vertical;transition:border-color .3s ease}.form-group textarea:focus{outline:0;border-color:#667eea}.auto-populated-box{background:#f8f9fa;border:2px dashed #667eea;border-radius:8px;padding:15px;min-height:100px;max-height:300px;overflow-y:auto;font-family:Monaco,'Courier New',monospace;font-size:13px;white-space:pre-wrap;word-wrap:break-word}.auto-populated-box.populated{background:#e8f5e9;border-color:#28a745}.email-preview{background:#f8f9fa;border:2px solid #667eea;border-radius:10px;padding:20px;margin-top:30px}.email-preview h3{color:#333;margin-bottom:15px;font-size:20px}.preview-header{background:#fff;border:1px solid #e0e0e0;border-radius:8px;padding:15px;margin-bottom:15px}.preview-header div{margin-bottom:8px;font-size:14px}.preview-header div:last-child{margin-bottom:0}.preview-body{background:#fff;border:1px solid #e0e0e0;border-radius:8px;padding:20px;min-height:200px;white-space:pre-wrap;word-wrap:break-word;line-height:1.6}.section-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:15px;padding-bottom:10px;border-bottom:2px solid #e0e0e0}.section-title{color:#333;font-size:18px;font-weight:600;margin:0}.collapse-btn{background:linear-gradient(135deg,#667eea 0,#764ba2 100%);color:#fff;border:none;border-radius:6px;padding:6px 12px;font-size:12px;font-weight:600;cursor:pointer;transition:all .3s ease;display:flex;align-items:center;gap:5px}.collapse-btn:hover{transform:translateY(-1px);box-shadow:0 3px 10px rgba(102,126,234,.3)}.collapse-btn .icon{font-size:14px;transition:transform .3s ease}.collapse-btn.collapsed .icon{transform:rotate(180deg)}.collapsible-content{max-height:2000px;overflow:hidden;transition:max-height .4s ease,opacity .3s ease,margin .3s ease;opacity:1}.collapsible-content.collapsed{max-height:0;opacity:0;margin:0}.section-wrapper{margin-bottom:25px}</style>
+</head>
+<body>
+    <div class="container">
+        <h1>📚 PDF Bookmark Extractor</h1>
+        <div class="drop-zone" id="dropZone">
+            <div class="drop-zone-icon">📄</div>
+            <div class="drop-zone-text">Drop your PDF file here</div>
+            <div class="drop-zone-subtext">or click to browse</div>
+        </div>
+        <input type="file" id="fileInput" class="file-input" accept=".pdf">
+        <div class="controls">
+            <div class="control-group">
+                <label for="depthSelect">Max Depth:</label>
+                <select id="depthSelect">
+                    <option value="1">Level 1 (Main headings)</option>
+                    <option value="2" >Level 2</option>
+                    <option value="3">Level 3</option>
+                    <option value="4">Level 4</option>
+                    <option value="5">Level 5</option>
+                    <option value="-1"selected>All levels</option>
+                </select>
+            </div>
+            <div class="control-group">
+                <label for="formatSelect">Output Format:</label>
+                <select id="formatSelect">
+                    <option value="markdown" selected>Markdown</option>
+                </select>
+            </div>
+            <div class="control-group">
+                <label for="indentSelect">Indent Size:</label>
+                <select id="indentSelect">
+                    <option value="2" selected>2 spaces</option>
+                    <option value="4">4 spaces</option>
+                    <option value="tab">Tab</option>
+                </select>
+            </div>
+            <div class="control-group">
+                <label for="blacklistUrl">Blacklist URL:</label>
+                <input type="text" id="blacklistUrl" 
+                       value="https://raw.githubusercontent.com/Penguax/WPF-Blacklist/refs/heads/main/blacklist.json"
+                    placeholder="https://raw.githubusercontent.com/user/repo/main/blacklist.json"
+                    
+                       title="URL to a JSON file containing bookmark titles to filter out">
+            </div>
+        </div>
+        <div class="blacklist-status" id="blacklistStatus"></div>
+        <div class="file-info" id="fileInfo">
+            <div class="file-info-title" id="fileName"></div>
+            <div class="file-info-details" id="fileDetails"></div>
+        </div>
+        <div class="status-message" id="statusMessage"></div>
+        <div class="output-container" id="outputContainer">
+            <div class="output" id="output"></div>
+        </div>
+        <div class="button-group">
+            <button class="btn btn-primary" id="copyBtn" disabled>
+                📋 Copy to Clipboard
+            </button>
+            <button class="btn btn-secondary" id="clearBtn" disabled>
+                🗑️ Clear
+            </button>
+        </div>
+        <div class="footer">
+            Supports PDF files with bookmarks/table of contents • Blacklist filtering enabled
+        </div>
+<div class="container" style="margin-top: 30px;">
+    <div class="section-wrapper">
+        <div class="section-header">
+            <h1 class="section-title">📝 Email Details (Auto-filled)</h1>
+            <button class="collapse-btn collapsed" onclick="toggleSection('emailDetailsSection')">
+                <span class="icon">▼</span>
+                <span class="btn-text">Expand</span>
+            </button>
+        </div>
+        
+        <div id="emailDetailsSection" class="collapsible-content collapsed">
+            <div class="form-group">
+                <label for="emailTo">TO:</label>
+                <input type="text" id="emailTo" placeholder="recipient@example.com">
+            </div>
+            <div class="form-group">
+                <label for="emailCC">CC:</label>
+                <input type="text" id="emailCC" placeholder="cc@example.com">
+            </div>
+            <div class="form-group">
+                <label for="emailSubject">Subject:</label>
+                <input type="text" id="emailSubject" placeholder="Email subject">
+            </div>
+        </div>
+    </div>
+    <div class="section-wrapper">
+        <div class="section-header">
+            <h1 class="section-title">📄 Email Body Parts (Auto-filled)</h1>
+            <button class="collapse-btn collapsed" onclick="toggleSection('bodyPartsSection')">
+                <span class="icon">▼</span>
+                <span class="btn-text">Expand</span>
+            </button>
+        </div>
+        <div id="bodyPartsSection" class="collapsible-content collapsed">
+            <div class="form-group">
+                <label for="bodyPart1">Body Part 1:</label>
+                <textarea id="bodyPart1" rows="3" placeholder="Enter greeting/opening..."></textarea>
+            </div>
+            <div class="form-group">
+                <label for="bodyPart2">Body Part 2:</label>
+                <textarea id="bodyPart2" rows="4" placeholder="Enter introduction..."></textarea>
+            </div>
+            <div class="form-group">
+                <label for="bodyPart3">Body Part 3:</label>
+                <textarea id="bodyPart3" rows="4" placeholder="Enter context/instructions..."></textarea>
+            </div>
+            <div class="form-group">
+                <label for="pdfBookmarks">PDF Bookmarks (Auto-populated):</label>
+                <div id="pdfBookmarks" class="auto-populated-box">
+                    <em style="color: #999;">Bookmarks will appear here automatically...</em>
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="bodyPart4">Body Part 4:</label>
+                <textarea id="bodyPart4" rows="5" placeholder="Enter closing remarks..."></textarea>
+            </div>
+        </div>
+    </div>
+    <div class="section-wrapper">
+        <h1>✉️ Email Composer</h1>
+        
+        <div class="button-group">
+            <button class="btn btn-primary" id="composeEmailBtn">📧 Compose Email</button>
+            <button class="btn btn-secondary" id="clearEmailBtn">🗑️ Clear All Fields</button>
+        </div>
+
+        <div class="email-preview" id="emailPreview" style="display: none;">
+            <h3>Email Preview</h3>
+            <div class="preview-header">
+                <div><strong>TO:</strong> <span id="previewTo"></span></div>
+                <div><strong>CC:</strong> <span id="previewCC"></span></div>
+                <div><strong>Subject:</strong> <span id="previewSubject"></span></div>
+            </div>
+            <div class="preview-body" id="previewBody"></div>
+        </div>
+    </div>
+</div>
+    </div>
+
+    <script>
+        pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+        let blacklistCache = null;
+        let blacklistLastFetched = null;
+        const BLACKLIST_CACHE_DURATION = 5 * 60 * 1000;
+        const dropZone = document.getElementById('dropZone');
+        const fileInput = document.getElementById('fileInput');
+        const output = document.getElementById('output');
+        const copyBtn = document.getElementById('copyBtn');
+        const clearBtn = document.getElementById('clearBtn');
+        const statusMessage = document.getElementById('statusMessage');
+        const fileInfo = document.getElementById('fileInfo');
+        const depthSelect = document.getElementById('depthSelect');
+        const formatSelect = document.getElementById('formatSelect');
+        const indentSelect = document.getElementById('indentSelect');
+        const blacklistUrl = document.getElementById('blacklistUrl');
+        const blacklistStatus = document.getElementById('blacklistStatus');
+        const outputContainer = document.getElementById('outputContainer');
+        async function fetchBlacklist(url) {
+            if (!url || url.trim() === '') {
+                return [];
+            }
+            const now = Date.now();
+            if (blacklistCache && blacklistLastFetched && (now - blacklistLastFetched < BLACKLIST_CACHE_DURATION)) {
+                return blacklistCache;}
+            try {
+                showBlacklistStatus('Fetching blacklist...', false);
+                const response = await fetch(url);
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);}
+                const data = await response.json();
+                let blacklist = [];
+                if (Array.isArray(data)) {
+                    blacklist = data;
+                } else if (data.blacklist && Array.isArray(data.blacklist)) {
+                    blacklist = data.blacklist;
+                } else if (data.items && Array.isArray(data.items)) {
+                    blacklist = data.items;}
+                blacklistCache = blacklist;
+                blacklistLastFetched = now;
+                showBlacklistStatus(`Blacklist loaded: ${blacklist.length} items filtered`, true);
+                return blacklist;
+            } catch (error) {
+                console.error('Error fetching blacklist:', error);
+                showBlacklistStatus(`Blacklist error: ${error.message}`, false);
+                return [];}
+        }
+        function showBlacklistStatus(message, success) {
+            blacklistStatus.textContent = message;
+            blacklistStatus.className = 'blacklist-status show';
+            if (success) {
+                blacklistStatus.classList.add('loaded');
+            }
+        }
+        function isBlacklisted(title, blacklist) {
+            if (!blacklist || blacklist.length === 0) {
+                return false;
+            }
+
+            const lowerTitle = title.toLowerCase();
+            return blacklist.some(term => {
+                const lowerTerm = term.toLowerCase();
+                // Exact match or contains match
+                return lowerTitle === lowerTerm || lowerTitle.includes(lowerTerm);
+            });}
+        function filterBookmarks(bookmarks, blacklist) {
+            if (!blacklist || blacklist.length === 0) {
+                return bookmarks;
+            }
+            return bookmarks.filter(bookmark => {
+                if (isBlacklisted(bookmark.title, blacklist)) {
+                    return false;
+                }
+                if (bookmark.items && bookmark.items.length > 0) {
+                    bookmark.items = filterBookmarks(bookmark.items, blacklist);
+                }
+
+                return true;
+            });
+        }
+        dropZone.addEventListener('click', () => fileInput.click());
+        fileInput.addEventListener('change', (e) => {
+            if (e.target.files.length > 0) {
+                handleFile(e.target.files[0]);
+            }
+        });
+        dropZone.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            dropZone.classList.add('drag-over');
+        });
+        dropZone.addEventListener('dragleave', () => {
+            dropZone.classList.remove('drag-over');
+        });
+        dropZone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            dropZone.classList.remove('drag-over');
+
+            if (e.dataTransfer.files.length > 0) {
+                handleFile(e.dataTransfer.files[0]);
+            }
+        });
+        copyBtn.addEventListener('click', async () => {
+            try {
+                await navigator.clipboard.writeText(output.textContent);
+                showStatus('Copied to clipboard!', 'success');
+            } catch (error) {
+                showStatus('Failed to copy to clipboard', 'error');
+            }
+        });
+        clearBtn.addEventListener('click', () => {
+            output.textContent = '';
+            fileInfo.classList.remove('show');
+            outputContainer.classList.remove('show');
+            statusMessage.classList.remove('show');
+            blacklistStatus.classList.remove('show');
+            copyBtn.disabled = true;
+            clearBtn.disabled = true;
+        });
+        formatSelect.addEventListener('change', () => {
+            if (fileInput.files.length > 0) {
+                handleFile(fileInput.files[0]);
+            }
+        });
+        depthSelect.addEventListener('change', () => {
+            if (fileInput.files.length > 0) {
+                handleFile(fileInput.files[0]);
+            }
+        });
+        indentSelect.addEventListener('change', () => {
+            if (fileInput.files.length > 0) {
+                handleFile(fileInput.files[0]);
+            }
+        });
+        blacklistUrl.addEventListener('change', () => {
+            blacklistCache = null;
+            blacklistLastFetched = null;
+
+            if (fileInput.files.length > 0) {
+                handleFile(fileInput.files[0]);
+            }
+        });
+        async function handleFile(file) {
+            if (!file) return;
+
+            if (file.type !== 'application/pdf') {
+                showStatus('Please upload a valid PDF file', 'error');
+                return;
+            }
+
+            try {
+                showStatus('Processing PDF...', 'success');
+
+                displayFileInfo(file);
+
+                const arrayBuffer = await file.arrayBuffer();
+
+                const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+
+                const outline = await pdf.getOutline();
+
+                if (!outline || outline.length === 0) {
+                    showStatus('No bookmarks found in this PDF', 'error');
+                    output.textContent = 'This PDF does not contain any bookmarks or table of contents.';
+                    outputContainer.classList.add('show');
+                    copyBtn.disabled = false;
+                    clearBtn.disabled = false;
+                    return;
+                }
+
+                const blacklist = await fetchBlacklist(blacklistUrl.value);
+
+                const filteredOutline = filterBookmarks(outline, blacklist);
+
+                const format = formatSelect.value;
+                const maxDepth = parseInt(depthSelect.value);
+                let result = '';
+
+                switch (format) {
+                    case 'markdown':
+                        result = formatAsMarkdown(filteredOutline, maxDepth);
+                        break;
+                }
+
+                output.textContent = result;
+                updatePDFBookmarksSection(result);
+                outputContainer.classList.add('show');
+                copyBtn.disabled = false;
+                clearBtn.disabled = false;
+
+                const removedCount = countTotalBookmarks(outline) - countTotalBookmarks(filteredOutline);
+                showStatus(`Successfully extracted bookmarks! ${removedCount > 0 ? `(${removedCount} filtered out)` : ''}`, 'success');
+
+            } catch (error) {
+                console.error('Error processing PDF:', error);
+                showStatus('Error processing PDF: ' + error.message, 'error');
+            }
+        }
+
+        function countTotalBookmarks(outline) {
+            let count = 0;
+            for (const item of outline) {
+                count++;
+                if (item.items && item.items.length > 0) {
+                    count += countTotalBookmarks(item.items);
+                }
+            }
+            return count;
+        }
+
+        function displayFileInfo(file) {
+            const fileName = document.getElementById('fileName');
+            const fileDetails = document.getElementById('fileDetails');
+
+            fileName.textContent = file.name;
+            fileDetails.textContent = `Size: ${formatFileSize(file.size)} • Type: ${file.type}`;
+
+            fileInfo.classList.add('show');
+        }
+
+        function formatFileSize(bytes) {
+            if (bytes === 0) return '0 Bytes';
+            const k = 1024;
+            const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return Math.round(bytes / Math.pow(k, i) * 100) / 100 + ' ' + sizes[i];
+        }
+        function showStatus(message, type) {
+            statusMessage.textContent = message;
+            statusMessage.className = `status-message show ${type}`;
+
+            if (type === 'success') {
+                setTimeout(() => {
+                    statusMessage.classList.remove('show');
+                }, 3000);
+            }
+        }
+        function getIndentString() {
+            const value = indentSelect.value;
+            if (value === 'tab') return '	';
+            return ' '.repeat(parseInt(value));
+        }
+        function formatAsMarkdown(outline, maxDepth) {
+            let result = '';
+
+            function processItem(item, depth) {
+                if (maxDepth !== -1 && depth > maxDepth) return;
+
+                const indent = getIndentString().repeat(depth - 1);
+                result += `${indent}- ${item.title}
+`;
+
+                if (item.items && item.items.length > 0) {
+                    item.items.forEach(child => processItem(child, depth + 1));
+                }
+            }
+
+            outline.forEach(item => processItem(item, 1));
+            return result.trim();
+        }
+    </script>
+    <script>
+    const emailTo = document.getElementById('emailTo');
+    const emailCC = document.getElementById('emailCC');
+    const emailSubject = document.getElementById('emailSubject');
+    const bodyPart1 = document.getElementById('bodyPart1');
+    const bodyPart2 = document.getElementById('bodyPart2');
+    const bodyPart3 = document.getElementById('bodyPart3');
+    const pdfBookmarks = document.getElementById('pdfBookmarks');
+    const bodyPart4 = document.getElementById('bodyPart4');
+    const composeEmailBtn = document.getElementById('composeEmailBtn');
+    const clearEmailBtn = document.getElementById('clearEmailBtn');
+    const emailPreview = document.getElementById('emailPreview');
+    const previewTo = document.getElementById('previewTo');
+    const previewCC = document.getElementById('previewCC');
+    const previewSubject = document.getElementById('previewSubject');
+    const previewBody = document.getElementById('previewBody');
+    let extractedBookmarksText = '';
+    function updatePDFBookmarksSection(bookmarksText) {
+        if (bookmarksText && bookmarksText.trim() !== '') {
+            extractedBookmarksText = bookmarksText;
+            pdfBookmarks.textContent = bookmarksText;
+            pdfBookmarks.classList.add('populated');
+        } else {
+            extractedBookmarksText = '';
+            pdfBookmarks.innerHTML = '<em style="color: #999;">Bookmarks will appear here automatically when you process a PDF above...</em>';
+            pdfBookmarks.classList.remove('populated');
+        }
+    }
+function convertIndentationForEmail(text) {
+    if (!text) return text;
+    
+    const lines = text.split('\n');
+    const convertedLines = lines.map(line => {
+        if (!line.trim()) return line;
+        const match = line.match(/^(\s*)[-*]\s*(.+)$/);
+        if (match) {
+            const spaces = match[1].length;
+            const content = match[2];
+            const indentLevel = Math.floor(spaces / 2);
+            const nbsp = '\u00A0'; 
+            if (indentLevel === 0) {
+                return '• ' + content;
+            } else if (indentLevel === 1) {
+                return nbsp.repeat(4) + '◦ ' + content;
+            } else if (indentLevel === 2) {
+                return nbsp.repeat(8) + '▪ ' + content;
+            } else {
+                return nbsp.repeat(12) + '- ' + content;
+            }
+        }
+        
+        return line;
+    });
+    
+    return convertedLines.join('\n');
+}
+function composeEmail() {
+    if (!emailTo.value.trim()) {
+        showStatus('Please enter at least one TO recipient', 'error');
+        return;
+    }
+    if (!emailSubject.value.trim()) {
+        showStatus('Please enter an email subject', 'error');
+        return;
+    }
+    let emailBody = '';
+    if (bodyPart1.value.trim()) {
+        emailBody += bodyPart1.value.trim() + '\n\n';
+    }
+    if (bodyPart2.value.trim()) {
+        emailBody += bodyPart2.value.trim() + '\n\n';
+    }
+    if (bodyPart3.value.trim()) {
+        emailBody += bodyPart3.value.trim() + '\n\n';
+    }
+    if (extractedBookmarksText && extractedBookmarksText.trim() !== '') {
+        const emailFriendlyBookmarks = convertIndentationForEmail(extractedBookmarksText.trim());
+        emailBody += emailFriendlyBookmarks + '\n\n';
+    }
+    if (bodyPart4.value.trim()) {
+        emailBody += bodyPart4.value.trim();
+    }
+    previewTo.textContent = emailTo.value;
+    previewCC.textContent = emailCC.value || '(none)';
+    previewSubject.textContent = emailSubject.value;
+    previewBody.textContent = emailBody;
+    emailPreview.style.display = 'block';
+    let mailtoLink = 'mailto:' + encodeURIComponent(emailTo.value);
+    let params = [];
+    if (emailCC.value.trim()) {
+        params.push('cc=' + encodeURIComponent(emailCC.value));}
+    params.push('subject=' + encodeURIComponent(emailSubject.value));
+    params.push('body=' + encodeURIComponent(emailBody));
+    if (params.length > 0) {
+        mailtoLink += '?' + params.join('&');}
+    window.location.href = mailtoLink;
+    emailPreview.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    showStatus('Opening email in your default mail client...', 'success');
+}
+    function clearEmailFields() {
+        emailTo.value = '';
+        emailCC.value = '';
+        emailSubject.value = '';
+        bodyPart1.value = '';
+        bodyPart2.value = '';
+        bodyPart3.value = '';
+        bodyPart4.value = '';
+        emailPreview.style.display = 'none';
+        showStatus('Email fields cleared', 'success');
+    }
+    composeEmailBtn.addEventListener('click', composeEmail);
+    clearEmailBtn.addEventListener('click', clearEmailFields);
+    const outputObserver = new MutationObserver((mutations) => {
+        const outputText = output.textContent;
+        if (outputText && outputText.trim() !== '' && 
+            !outputText.includes('does not contain any bookmarks')) {
+            updatePDFBookmarksSection(outputText);
+        }
+    });
+    outputObserver.observe(output, { 
+        childList: true, 
+        characterData: true, 
+        subtree: true 
+    });
+    function toggleSection(sectionId) {
+    const section = document.getElementById(sectionId);
+    const button = event.currentTarget;
+    const icon = button.querySelector('.icon');
+    const btnText = button.querySelector('.btn-text');
+    
+    if (section.classList.contains('collapsed')) {
+        section.classList.remove('collapsed');
+        button.classList.remove('collapsed');
+        btnText.textContent = 'Minimize';
+    } else {
+        section.classList.add('collapsed');
+        button.classList.add('collapsed');
+        btnText.textContent = 'Expand';
+    }
+}
+</script>
+</body>
+</html>
