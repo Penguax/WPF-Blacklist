@@ -912,6 +912,10 @@ function composeEmail() {
     if (bodyPart2.value.trim()) {
         emailBody += bodyPart2.value.trim() + '\n\n';
     }
+    if (window.emailDataPart1 && window.emailDataPart1.hasHyperlink && window.emailDataPart1.hyperlink) {
+        const linkText = window.emailDataPart1.screenTip || 'Click here to access the form';
+        emailBody += linkText + ': ' + window.emailDataPart1.hyperlink + '\n\n';
+    }
     if (bodyPart3.value.trim()) {
         emailBody += bodyPart3.value.trim() + '\n\n';
     }
